@@ -95,6 +95,8 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   enableGpioG();
+  enableGpioA();
+  gpioConfig(GpioA,0,GPIO_MODE_IN, 0,0,0);
   gpioGConfig(greenLedPin,GPIO_MODE_OUT, GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_HI_SPEED);
   gpioGConfig(redLedPin,GPIO_MODE_OUT, GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_HI_SPEED);
   /* USER CODE END 2 */
@@ -103,13 +105,25 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  volatile int blueButtonState;
   /* USER CODE END WHILE */
-	  gpioGWrite(redLedPin,0);
-	  gpioGWrite(greenLedPin,1);
+	  /*
+	  gpioWrite(GpioG,redLedPin,0);
+	  gpioWrite(GpioG,greenLedPin,1);
 	  HAL_Delay(200);
-	  gpioGWrite(redLedPin,1);
-	  gpioGWrite(greenLedPin,0);
+	  gpioWrite(GpioG,redLedPin,1);
+	  gpioWrite(GpioG,greenLedPin,0);
 	  HAL_Delay(200);
+*/
+	  blueButtonState=gpioRead(GpioA,0);
+	  while(blueButtonState==1){
+		  blueButtonState=gpioRead(GpioA,0);
+		  gpioWrite(GpioG,greenLedPin,1);
+		  //HAL_Delay(200);
+	  }
+	  gpioWrite(GpioG,greenLedPin,0);
+	  //HAL_Delay(200);
+
   /* USER CODE BEGIN 3 */
 
   }
