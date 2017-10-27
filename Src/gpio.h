@@ -11,22 +11,30 @@
 
 #include <stdint.h>
 
-
 #define GPIOG_BASE_ADDR	0x40021800
-#define GPIO_MODE_OFF	0x0
-#define GPIO_OSPEED_OFF	0x08
-#define GPIO_OTYPE_OFF	0x04
-#define GPIO_PUPD_OFF	0x0C
-#define GPIO_ID_OFF		0x10
-#define GPIO_OD_OFF		0x14
-#define GPIO_BSR_OFF	0x18
-#define GPIO_LCK_OFF	0x1C
 
+
+typedef struct GpioReg GpioReg;
+
+struct GpioReg{
+	volatile uint32_t mode;
+	volatile uint32_t outType;
+	volatile uint32_t outSpeed;
+	volatile uint32_t pullType;
+	volatile uint32_t inData;
+	volatile uint32_t outData;
+	volatile uint32_t bitData;
+	volatile uint32_t lock;
+	volatile uint32_t altFuncLow;
+	volatile uint32_t altFuncHigh;
+};
+
+#define GpioG			((GpioReg *)(GPIOG_BASE_ADDR))
 //mode
 #define GPIO_MODE_IN		 0
-#define GPIO_MODE_OUT	 1
+#define GPIO_MODE_OUT		 1
 #define GPIO_MODE_AF		 2
-#define GPIO_MODE_ANA 	 3
+#define GPIO_MODE_ANA 		 3
 
 //pin output drive type
 #define GPIO_PUSH_PULL	 	0
@@ -43,15 +51,5 @@
 #define GPIO_PULL_UP	 	1
 #define GPIO_PULL_DOWN	 	2
 #define GPIO_RESERVED	 	3
-
-
-
-
-//export other variable modules
-extern uint32_t *gpioGMode;
-extern uint32_t *gpioGOSpeed;
-extern uint32_t *gpioGPupd;
-extern uint32_t *gpioGOd;
-
 
 #endif /* GPIO_H_ */
