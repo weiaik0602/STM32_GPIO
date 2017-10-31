@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+//GPIO
 #define GPIOA_BASE_ADDR	0x40020000
 #define GPIOB_BASE_ADDR	0x40020400
 #define GPIOC_BASE_ADDR	0x40020800
@@ -31,7 +32,7 @@ struct GpioReg{
 	volatile uint32_t pullType;
 	volatile uint32_t inData;
 	volatile uint32_t outData;
-	volatile uint32_t bitData;
+	volatile uint32_t bsr;
 	volatile uint32_t lock;
 	volatile uint32_t altFuncLow;
 	volatile uint32_t altFuncHigh;
@@ -69,10 +70,19 @@ struct GpioReg{
 #define GPIO_PULL_DOWN	 	2
 #define GPIO_RESERVED	 	3
 
+
+//macro
+#define SET_PIN(gpio, pinNum)	(gpio->bsr=(1<<pinNum))
+#define RESET_PIN(gpio, pinNum)	(gpio->bsr=(1<<(16+pinNum)))
+
+
 void gpioConfig(GpioReg *gpio,int pin,int mode, int outDriveType,int pullType,int speed);
 void gpioWrite(GpioReg *gpio,int pin, int state);
 
 void gpioGConfig(int pin,int mode, int outDriveType,int pullType,int speed);
 void gpioGWrite(int pin, int state);
 int gpioRead(GpioReg *gpio,int pin);
+void gpioLock(GpioReg *gpio,int pin);
+
+
 #endif /* GPIO_H_ */

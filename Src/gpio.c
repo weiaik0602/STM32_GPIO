@@ -7,6 +7,8 @@
 
 #include "gpio.h"
 
+
+
 void gpioGConfig(int pin,int mode, int outDriveType,int pullType,int speed){
 	///MODE configuration
 	GpioG->mode &=~(3<<(pin*2));
@@ -27,9 +29,11 @@ void gpioGConfig(int pin,int mode, int outDriveType,int pullType,int speed){
 
 void gpioGWrite(int pin, int state){
 	if(state==1){
-		GpioG->outData |=1<<pin;
+		SET_PIN(GpioG,pin);
+		//GpioG->outData |=1<<pin;
 	}else{
-		GpioG->outData &=~(1<<pin);
+		RESET_PIN(GpioG,pin);
+		//GpioG->outData &=~(1<<pin);
 	}
 
 }
@@ -54,14 +58,22 @@ void gpioConfig(GpioReg *gpio,int pin,int mode, int outDriveType,int pullType,in
 }
 void gpioWrite(GpioReg *gpio,int pin, int state){
 	if(state==1){
-		gpio->outData |=1<<pin;
+		SET_PIN(gpio,pin);
+		//gpio->outData |=1<<pin;
 	}else{
-		gpio->outData &=~(1<<pin);
+		RESET_PIN(gpio,pin);
+		//gpio->outData &=~(1<<pin);
 	}
-
 }
 
 int gpioRead(GpioReg *gpio,int pin){
 	return (gpio->inData)&(1 <<pin);
-	}
+}
 
+void gpioLock(GpioReg *gpio,int pin){
+	int lockstate;
+	gpio->lock=(1<<16)|(1<<pin);
+	gpio->lock=(0<<16)|(1<<pin);
+	gpio->lock=(1<<16)|(1<<pin);
+	lockstate=gpio->lock;
+}

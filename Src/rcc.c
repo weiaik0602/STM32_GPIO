@@ -7,18 +7,34 @@
 
 
 #include "rcc.h"
+#include "gpio.h"
 
-uint32_t *rccAhb1Rst=(uint32_t *)(RCC_BASE_ADDR+RCC_AHB1RST_OFF);
-uint32_t *rccAhb1En=(uint32_t *)(RCC_BASE_ADDR+RCC_AHB1EN_OFF);
 
-void enableGpioA(){
-	*rccAhb1Rst &= ~1;
-	*rccAhb1En |=1;
+
+void enableGpio(int Gpio){
+	int pin;
+	switch(Gpio){
+	case(A):pin=0;
+			  break;
+	case(B):pin=1;
+			  break;
+	case(C):pin=2;
+			  break;
+	case(D):pin=3;
+			  break;
+	case(E):pin=4;
+			  break;
+	case(F):pin=5;
+			  break;
+	case(G):pin=6;
+			  break;
+	}
+	Rcc->AHB1RSTR &=~(1<<pin);
+	Rcc->AHB1ENR |=(1<<pin);
 }
-
-
-
-void enableGpioG(){
-	*rccAhb1Rst &= ~(1<<6);
-	*rccAhb1En |=1<<6;
+void enableRng(void){
+	//Unreset RNG
+	Rcc-> AHB2RSTR &= ~(1 << 6);
+	//Start clock of RNG
+	Rcc-> AHB2ENR |= 1 << 6;
 }

@@ -38,8 +38,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
+#include "stdio.h"
 #include "gpio.h"
 #include "rcc.h"
+#include "rng.h"
+#include "nvic.h"
 
 /* USER CODE BEGIN Includes */
 #define greenLedPin 13
@@ -60,7 +63,7 @@ static void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
+extern void initialise_monitor_handles(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -71,7 +74,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	initialise_monitor_handles();
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -94,8 +97,15 @@ int main(void)
   MX_GPIO_Init();
 
   /* USER CODE BEGIN 2 */
-  enableGpioG();
-  enableGpioA();
+
+
+  printf("hello!!!\n");
+  nvicEnableIrq(80);
+  nvicSetPrio(80,4);
+  enableGpio(G);
+  enableGpio(A);
+  enableRng();
+
   gpioConfig(GpioA,0,GPIO_MODE_IN, 0,0,0);
   gpioGConfig(greenLedPin,GPIO_MODE_OUT, GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_HI_SPEED);
   gpioGConfig(redLedPin,GPIO_MODE_OUT, GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_HI_SPEED);
@@ -105,16 +115,21 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+	  getRandomNumberByInterrupt();
+	  //printf("%d\n",number);
 	  volatile int blueButtonState;
   /* USER CODE END WHILE */
-	  /*
+
 	  gpioWrite(GpioG,redLedPin,0);
 	  gpioWrite(GpioG,greenLedPin,1);
 	  HAL_Delay(200);
 	  gpioWrite(GpioG,redLedPin,1);
 	  gpioWrite(GpioG,greenLedPin,0);
 	  HAL_Delay(200);
-*/
+	  //gpioLock(GpioG,redLedPin);
+	  //gpioGConfig(redLedPin,GPIO_MODE_IN, GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_HI_SPEED);
+	  /*
 	  blueButtonState=gpioRead(GpioA,0);
 	  while(blueButtonState==1){
 		  blueButtonState=gpioRead(GpioA,0);
@@ -123,7 +138,7 @@ int main(void)
 	  }
 	  gpioWrite(GpioG,greenLedPin,0);
 	  //HAL_Delay(200);
-
+*/
   /* USER CODE BEGIN 3 */
 
   }
@@ -210,7 +225,9 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void 	HASH_RNG_IRQHandler(void){
+	volatile int rand= Rng->DR;
+}
 /* USER CODE END 4 */
 
 /**
