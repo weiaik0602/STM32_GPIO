@@ -77,3 +77,10 @@ void gpioLock(GpioReg *gpio,int pin){
 	gpio->lock=(1<<16)|(1<<pin);
 	lockstate=gpio->lock;
 }
+
+void gpioConfigAltFuncNum(GpioReg *gpio,int pin,int AF){
+	 if(pin<7)
+		 gpio->altFuncLow =  AF << (pin*4);
+	 else
+		 gpio->altFuncHigh = AF << (pin*4);
+ }

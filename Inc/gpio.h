@@ -48,6 +48,26 @@ struct GpioReg{
 #define GpioH			((GpioReg *)(GPIOH_BASE_ADDR))
 #define GpioI			((GpioReg *)(GPIOI_BASE_ADDR))
 
+
+//Alternate Function
+#define ALT_FUNC0		0
+#define ALT_FUNC1		1
+#define ALT_FUNC2		2
+#define ALT_FUNC3		3
+#define ALT_FUNC4		4
+#define ALT_FUNC5		5
+#define ALT_FUNC6		6
+#define ALT_FUNC7		7
+#define ALT_FUNC8		8
+#define ALT_FUNC9		9
+#define ALT_FUNC10		10
+#define ALT_FUNC11		11
+#define ALT_FUNC12		12
+#define ALT_FUNC13		13
+#define ALT_FUNC14		14
+#define ALT_FUNC15		15
+
+
 //mode
 #define GPIO_MODE_IN		 0
 #define GPIO_MODE_OUT		 1
@@ -83,6 +103,6 @@ void gpioGConfig(int pin,int mode, int outDriveType,int pullType,int speed);
 void gpioGWrite(int pin, int state);
 int gpioRead(GpioReg *gpio,int pin);
 void gpioLock(GpioReg *gpio,int pin);
-
+void gpioConfigAltFuncNum(GpioReg *gpio,int pin,int AF);
 
 #endif /* GPIO_H_ */
