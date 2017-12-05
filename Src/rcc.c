@@ -38,3 +38,13 @@ void enableRng(void){
 	//Start clock of RNG
 	Rcc-> AHB2ENR |= 1 << 6;
 }
+
+void enableTim8(void){
+	Rcc->APB2RSTR &=~(1 << 1);
+	Rcc->APB2ENR  |=(1 << 1);
+}
+void enableI2C(int pin){
+	Rcc->APB1RSTR &=~(1<<pin);
+	Rcc->APB1ENR  |=(1<<pin);
+}
+

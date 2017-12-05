@@ -78,6 +78,10 @@ struct RccReg{
 #define MCO_DIV_BY_6		4
 #define MCO_DIV_BY_7		5
 
+
+#define I2C1_DEV		21
+#define I2C2_DEV		22
+
 #define rccSelectMco1src(x)				\
 	do{									\
 		Rcc->CFGR &= ~(3 << 21);		\
@@ -98,5 +102,7 @@ void enableGpio(int Gpio);
 void enableGpioG();
 void enableGpioA();
 void enableRng();
+void enableTim8();
 
+void enableI2C(int pin);
 #endif /* RCC_H_ */

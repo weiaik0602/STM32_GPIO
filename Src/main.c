@@ -47,6 +47,11 @@
 #include "nvic.h"
 #include "SysTick.h"
 #include "EXTI.h"
+#include "timer.h"
+#include "DbgMcu.h"
+#include "i2c.h"
+#include "flash.h"
+
 
 
 #define greenLedPin 13
@@ -87,7 +92,6 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -107,6 +111,8 @@ int main(void)
   //GPIO
   enableGpio(G);
   enableGpio(A);
+  enableGpio(B);
+  enableGpio(F);
   enableRng();
 
   gpioConfig(GpioA,0,GPIO_MODE_IN, 0,0,0);
@@ -116,8 +122,8 @@ int main(void)
 
   //Configure GPIOA pin 8 as MCO1 (push-pull with no-pull at very
    //high speed output)
-    gpioConfig(GpioA,8,GPIO_MODE_AF,GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_VHI_SPEED);
-    gpioConfigAltFuncNum(GpioA,8,ALT_FUNC0);
+   // gpioConfig(GpioA,8,GPIO_MODE_AF,GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_VHI_SPEED);
+   // gpioConfigAltFuncNum(GpioA,8,ALT_FUNC0);
     rccSelectMco1src(MCO_HSE_SRC);
     rccSetMco1PreScaler(MCO_DIV_BY_5);
 
@@ -147,27 +153,67 @@ int main(void)
    nvicSetPrio(6,4);
    //setup EXTI
    //EXTI_IMR_UNMASK(0);
-  sysTickDisable();
+   sysTickDisable();
    EXTI_IMR_ENABLE(0);
    EXTI_RTSR_ENABLE(0);
 
    //EXTI_SWIER_ENABLE(0);
+   //enable timer8
+
+   //enableTimer8();
+  // haltTimer8WhenDebugging();
+
+   //I2C
+   //Configure GPIOA pin 8 as MCO1 (push-pull with no-pull at very
+     //high speed output)
+
+      //enable I2C1&2
 
 
+   //initI2c();
 
+   //haltI2C2WhenDebugging();
+   //haltI2C1WhenDebugging();
+   gpioWrite(GpioG,redLedPin,0);
+   gpioWrite(GpioG,redLedPin,0);
 
+   writeMessage("Hello!!!",0x08020000);
+   if(flashEraseSector(13)==1){
+	   flashEnableProgramming(FLASH_BYTE_SIZE);
+	   writeMessage("Hello!!!",0x08084000);
+
+	   flashEraseSector(13);
+	   flashDisableProgramming();
+	   writeMessage("Abc!!!",0x08084000);
+	   writeMessage("Wrong!!!",0x08084000);
+	   while(1);
+   }
+   else
+   	   while(1);
+  // flashEraseSector(5);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
+	 // int status = (Timer8->SR)&0x01;
 	 // gpioWrite(GpioG,redLedPin,0);
-	  gpioWrite(GpioG,redLedPin,1);
-	  __WFI();
-	  gpioWrite(GpioG,redLedPin,0);
-	  __WFI();
-	  gpioWrite(GpioG,redLedPin,1);
+	  //while(status==0){
+	  //gpioWrite(GpioG,redLedPin,1);
+	 // status = (Timer8->SR)&0x01;
+	  //Timer8->SR	&= ~(1);
+	  //}
+	  //__WFI();
+//	  /Timer8->SR	&= ~(1);
+
+	//  gpioWrite(GpioG,redLedPin,0);
+	//  wait500ms();
+	//  gpioWrite(GpioG,redLedPin,1);
+	 // wait500ms();
+	  //__WFI();
+	  //gpioWrite(GpioG,redLedPin,1);
 /*
 	  //Systick
 	  gpioWrite(GpioG,redLedPin,1);
@@ -178,7 +224,7 @@ int main(void)
 
 	  //getRandomNumberByInterrupt();
 	  //printf("%d\n",number);
-	  volatile int blueButtonState;
+	//  volatile int blueButtonState;
   /* USER CODE END WHILE */
 /*
 	  gpioWrite(GpioG,redLedPin,0);
@@ -196,7 +242,8 @@ int main(void)
 		  gpioWrite(GpioG,greenLedPin,1);
 		  //HAL_Delay(200);
 	  }
-	  gpioWrite(GpioG,greenLedPin,0);*/
+	  gpioWrite(GpioG,greenLedPin,0);
+	  */
 	  //HAL_Delay(200);
   /* USER CODE BEGIN 3 */
 
