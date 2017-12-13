@@ -41,6 +41,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+#include "stdint.h"
 #include "gpio.h"
 #include "rcc.h"
 #include "rng.h"
@@ -51,7 +52,7 @@
 #include "DbgMcu.h"
 #include "i2c.h"
 #include "flash.h"
-
+#include "usart.h"
 
 
 #define greenLedPin 13
@@ -106,7 +107,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 
-
+ /// HAL_Delay(200);
   printf("hello!!!\n");
   //GPIO
   enableGpio(G);
@@ -115,18 +116,19 @@ int main(void)
   enableGpio(F);
   enableRng();
 
-  gpioConfig(GpioA,0,GPIO_MODE_IN, 0,0,0);
-  gpioGConfig(greenLedPin,GPIO_MODE_OUT, GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_HI_SPEED);
+  //gpioConfig(GpioA,0,GPIO_MODE_IN, 0,0,0);
+  //gpioGConfig(greenLedPin,GPIO_MODE_OUT, GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_HI_SPEED);
   gpioGConfig(redLedPin,GPIO_MODE_OUT, GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_HI_SPEED);
 
 
   //Configure GPIOA pin 8 as MCO1 (push-pull with no-pull at very
    //high speed output)
-   // gpioConfig(GpioA,8,GPIO_MODE_AF,GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_VHI_SPEED);
-   // gpioConfigAltFuncNum(GpioA,8,ALT_FUNC0);
+/*
+    gpioConfig(GpioA,8,GPIO_MODE_AF,GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_VHI_SPEED);
+    gpioConfigAltFuncNum(GpioA,8,ALT_FUNC0);
     rccSelectMco1src(MCO_HSE_SRC);
     rccSetMco1PreScaler(MCO_DIV_BY_5);
-
+*/
   //ENABLE RNG interupt(page 376)
 //  nvicEnableIrq(80);
  // nvicSetPrio(80,4);
@@ -153,7 +155,7 @@ int main(void)
    nvicSetPrio(6,4);
    //setup EXTI
    //EXTI_IMR_UNMASK(0);
-   sysTickDisable();
+   //sysTickDisable();
    EXTI_IMR_ENABLE(0);
    EXTI_RTSR_ENABLE(0);
 
@@ -174,6 +176,7 @@ int main(void)
 
    //haltI2C2WhenDebugging();
    //haltI2C1WhenDebugging();
+   /*
    gpioWrite(GpioG,redLedPin,0);
    gpioWrite(GpioG,redLedPin,0);
 
@@ -189,15 +192,67 @@ int main(void)
 	   while(1);
    }
    else
-   	   while(1);
+   	   while(1);*/
+
+//HAL_Delay(200);
   // flashEraseSector(5);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+   //usart
+   gpioConfig(GpioA,9,GPIO_MODE_AF,GPIO_PUSH_PULL,GPIO_PULL_UP,GPIO_VHI_SPEED);
+   gpioConfigAltFuncNum(GpioA,9,ALT_FUNC7);
+   gpioConfig(GpioA,10,GPIO_MODE_AF,GPIO_PUSH_PULL,GPIO_PULL_UP,GPIO_VHI_SPEED);
+   gpioConfigAltFuncNum(GpioA,10,ALT_FUNC7);
+   enableUSART1();
+   int dat=0x45;
+   /*uart transmit
+    *
+    * HAL_Delay(1000);
+	  char id[]="hell0 WorLD\n";
+	  int z=sizeof(id);
+	  USARTSendString(id,z);
+    */
+  // int x[50];
+   char *str= (char*)malloc(sizeof(char) * 20);
+   char	*store= (char*)malloc(sizeof(char) * 20);
+   //volatile char x=USARTReceiveData();
+
 
   while (1)
   {
+	  volatile int y=USARTReceiveUntilEnter(&str,&store);
+	    if(strcmp("turn on", &str)==0){
+	 	   gpioWrite(GpioG,redLedPin,1);
+	    }
+	    if(strcmp("turn off", &str)==0){
+	    	   gpioWrite(GpioG,redLedPin,0);
+	     }
+	    if(strcmp("blink", &str)==0){
+	    	//HAL_Delay(200);
+	    	gpioWrite(GpioG,redLedPin,1);
+	    	HAL_Delay(250);
+	    	gpioWrite(GpioG,redLedPin,0);
+	    	HAL_Delay(250);
+	    	gpioWrite(GpioG,redLedPin,1);
+	    	HAL_Delay(250);
+	    	gpioWrite(GpioG,redLedPin,0);
+	    	HAL_Delay(250);
+	    }
+
+
+	 //if((((USART1->SR)>>5)&0x01)==1){
+	  //while(USART1->DR==NULL){}
+	  	//i=USARTReceiveData();
+	  	//i++;
+	//  }
+	  //for(int i=0;i<2000;i++){
+		//  for(int j=0;j<2000;j++){
+
+		  //}
+	  //}
+
 	 // int status = (Timer8->SR)&0x01;
 	 // gpioWrite(GpioG,redLedPin,0);
 	  //while(status==0){

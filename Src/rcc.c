@@ -48,3 +48,9 @@ void enableI2C(int pin){
 	Rcc->APB1ENR  |=(1<<pin);
 }
 
+void enableUsart1(void){
+	Rcc->APB2RSTR &=~(1 << 4);
+	Rcc->APB2ENR  |=(1 << 4);
+}
+
+

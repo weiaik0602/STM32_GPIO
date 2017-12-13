@@ -103,6 +103,6 @@ void enableGpioG();
 void enableGpioA();
 void enableRng();
 void enableTim8();
-
+void enableUsart1();
 void enableI2C(int pin);
 #endif /* RCC_H_ */
