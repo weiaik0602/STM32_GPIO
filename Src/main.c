@@ -38,7 +38,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx_hal.h"
-
+#include <string.h>
+#include <malloc.h>
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "stdint.h"
@@ -53,7 +54,7 @@
 #include "i2c.h"
 #include "flash.h"
 #include "usart.h"
-
+#include "dma.h"
 
 #define greenLedPin 13
 #define redLedPin 	14
@@ -205,31 +206,42 @@ int main(void)
    gpioConfigAltFuncNum(GpioA,9,ALT_FUNC7);
    gpioConfig(GpioA,10,GPIO_MODE_AF,GPIO_PUSH_PULL,GPIO_PULL_UP,GPIO_VHI_SPEED);
    gpioConfigAltFuncNum(GpioA,10,ALT_FUNC7);
-   enableUSART1();
-   int dat=0x45;
+
+
+   setUpDMA4UART();
+   char *str="Yoyo,check this now\n";
+   UartTxUsingDMA(str);
+   //UartRxUsingDMA(0x8001D48);
+  // enableDMA(DMA2_DEV);
+
+   enableUSART1(USART1);
    /*uart transmit
-    *
-    * HAL_Delay(1000);
+    **/
+    //HAL_Delay(1000);
 	  char id[]="hell0 WorLD\n";
 	  int z=sizeof(id);
-	  USARTSendString(id,z);
-    */
+
+
   // int x[50];
-   char *str= (char*)malloc(sizeof(char) * 20);
+   //char *str= (char*)malloc(sizeof(char) * 20);
    char	*store= (char*)malloc(sizeof(char) * 20);
    //volatile char x=USARTReceiveData();
 
 
   while (1)
   {
-	  volatile int y=USARTReceiveUntilEnter(&str,&store);
-	    if(strcmp("turn on", &str)==0){
+	  int i=123;
+	 // USARTSendCharDataOut(USART1,"h");
+	  //USARTSendString(USART1,id,z);
+/*
+	  volatile int y=USARTReceiveUntilEnter(USART1,str,store);
+	    if(strcmp("turn on", str)==0){
 	 	   gpioWrite(GpioG,redLedPin,1);
 	    }
-	    if(strcmp("turn off", &str)==0){
+	    if(strcmp("turn off", str)==0){
 	    	   gpioWrite(GpioG,redLedPin,0);
 	     }
-	    if(strcmp("blink", &str)==0){
+	    if(strcmp("blink", str)==0){
 	    	//HAL_Delay(200);
 	    	gpioWrite(GpioG,redLedPin,1);
 	    	HAL_Delay(250);
@@ -240,7 +252,7 @@ int main(void)
 	    	gpioWrite(GpioG,redLedPin,0);
 	    	HAL_Delay(250);
 	    }
-
+*/
 
 	 //if((((USART1->SR)>>5)&0x01)==1){
 	  //while(USART1->DR==NULL){}

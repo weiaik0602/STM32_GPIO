@@ -82,6 +82,10 @@ struct RccReg{
 #define I2C1_DEV		21
 #define I2C2_DEV		22
 
+
+#define DMA1_DEV		1
+#define DMA2_DEV		2
+
 #define rccSelectMco1src(x)				\
 	do{									\
 		Rcc->CFGR &= ~(3 << 21);		\
@@ -105,4 +109,5 @@ void enableRng();
 void enableTim8();
 void enableUsart1();
 void enableI2C(int pin);
+void enableDMA(int pin);
 #endif /* RCC_H_ */

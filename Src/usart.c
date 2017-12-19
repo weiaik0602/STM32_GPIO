@@ -7,19 +7,28 @@
 
 #include "usart.h"
 #include "rcc.h"
-
-void enableUSART1(){
+/*
+ *
+ * PA10 --USART1 RX
+ * PA9	--USART1 TX
+ *
+ *
+ */
+void enableUSART1(UsartReg *usart){
+	// assuming is 1
 	enableUsart1();
-	settingUpBoudRate(0xd,0x30);
+	settingUpBoudRate(usart,0xd,0x30);
 
-	USART1->CR1=(USARTEn|USARTOddParity|WordLength9|PCEEn|TEEn);
+	usart->CR1=(USARTEn|USARTOddParity|WordLength9|PCEEn|TEEn);
 	//|TEEn
-	USART1->CR2 &=~(3<<12);
-	USART1->CR2	|=(2<<12);
+	usart->CR2 &=~(3<<12);
+	usart->CR2	|=(2<<12);
+	usart->CR1|=REEn;
+	settingEnableDMA(usart);
 }
 
 
-void settingUpBoudRate(int fraction,int mantissa){
+void settingUpBoudRate(UsartReg *usart,int fraction,int mantissa){
 	//USART1->BRR&=~(0x7);			// d48.516
 	/*
 	 * 0.516*8=4.128
@@ -29,44 +38,51 @@ void settingUpBoudRate(int fraction,int mantissa){
 	 * 48=0x30
 	 * put this into mantissa
 	 */
-	USART1->BRR =((mantissa<<4)|(fraction));
+	usart->BRR =((mantissa<<4)|(fraction));
 	//USART1->BRR=rate;
 
 }
-void USARTSendDataOut(int dat){
-	while((((USART1->SR)>>7)&0x01)!=1){
+
+void settingEnableDMA(UsartReg *usart){
+	//for both Tx and Rx
+	usart->CR3 |=(0x3<<6);
+}
+
+
+
+void USARTSendDataOut(UsartReg *usart,int dat){
+	while((((usart->SR)>>7)&0x01)!=1){
 		}
-	USART1->DR=dat;
+	usart->DR=dat;
 }
-void USARTSendCharDataOut(char* dat){
-	while((((USART1->SR)>>7)&0x01)!=1){
-	}
-	USART1->DR=*dat;
-
+void USARTSendCharDataOut(UsartReg *usart,char* dat){
+	while((((usart->SR)>>7)&0x01)!=1){
+		}
+	usart->DR=*dat;
 }
-void USARTSendString(char str[],int size){
+void USARTSendString(UsartReg *usart,char str[],int size){
 	for(int i=0;i<size;i++){
-	USARTSendCharDataOut(&str[i]);
+	USARTSendCharDataOut(usart,&str[i]);
 	}
 }
 
-uint8_t USARTReceiveData(char *store){
-	USART1->CR1|=REEn;
-	while((((USART1->SR)>>5)&0x01)==0){
-		HAL_Delay(500);
-		return *store;
+uint8_t USARTReceiveData(UsartReg *usart,char *store){
+	usart->CR1|=REEn;
+	while((((usart->SR)>>5)&0x01)==0){
+		//HAL_Delay(500);
+		//return *store;
 	}
 	*store=(uint8_t)USART1->DR;
 	return (uint8_t)USART1->DR;
 }
-int USARTReceiveUntilEnter(char *str,char *store){
+int USARTReceiveUntilEnter(UsartReg *usart,char *str,char *store){
 	//USART1->CR1|=REEn;
-	*str=USARTReceiveData(&store);
+	*str=USARTReceiveData(usart,&store);
 	int count =0;
 	while(*str!=0xa){
 		count++;
 		str++;
-		*str=USARTReceiveData(&store);
+		*str=USARTReceiveData(usart,&store);
 	}
 	*str=0;
 	return count;

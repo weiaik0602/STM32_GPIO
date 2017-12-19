@@ -46,11 +46,15 @@ struct UsartReg{
 
 
 
-void enableUSART1();
-void USARTSendDataOut(int dat);
-void settingUpBoudRate(int fraction,int mantissa);
-void USARTSendCharDataOut(char* dat);
-void USARTSendString(char str[],int size);
-uint8_t USARTReceiveData(char *store);
-int USARTReceiveUntilEnter(char *str,char *store);
+void enableUSART1(UsartReg *usart);
+void settingUpBoudRate(UsartReg *usart,int fraction,int mantissa);
+void USARTSendDataOut(UsartReg *usart,int dat);
+void USARTSendCharDataOut(UsartReg *usart,char* dat);
+void USARTSendString(UsartReg *usart,char str[],int size);
+uint8_t USARTReceiveData(UsartReg *usart,char *store);
+int USARTReceiveUntilEnter(UsartReg *usart,char *str,char *store);
+void settingEnableDMA(UsartReg *usart);
+
+
+
 #endif /* USART_H_ */

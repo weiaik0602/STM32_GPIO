@@ -53,4 +53,9 @@ void enableUsart1(void){
 	Rcc->APB2ENR  |=(1 << 4);
 }
 
-
+//DMA1_DEV for DMA1
+//DMA2_DEV for DMA2
+void enableDMA(int pin){
+	Rcc->AHB1RSTR &=~(1<<(20+pin));
+	Rcc->AHB1ENR |=(1<<(20+pin));
+}
